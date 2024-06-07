@@ -1,4 +1,3 @@
-import time
 import numpy as np
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
@@ -27,17 +26,17 @@ pass_quality['precaution'] = fuzz.trapmf(pass_quality.universe, [3, 4, 6, 7])
 pass_quality['open'] = fuzz.trapmf(pass_quality.universe, [6, 7, 10, 12])
 
 # Reglas del sistema
-rule1 = ctrl.Rule(pm10['low'] & pm25['low'] & ~humidity['high'], pass_quality['open'])
-rule2 = ctrl.Rule(pm10['low'] & pm25['medium'] & ~humidity['high'], pass_quality['open'])
-rule3 = ctrl.Rule(pm10['medium'] & pm25['low'] & ~humidity['high'], pass_quality['open'])
-rule4 = ctrl.Rule(pm10['medium'] & pm25['medium'] & ~humidity['high'], pass_quality['precaution'])
-rule5 = ctrl.Rule(pm10['high'] | pm25['high'] | humidity['high'], pass_quality['close'])
+rule1 = ctrl.Rule(antecedent=pm10['low'] & pm25['low'] & ~humidity['high'], consequent=pass_quality['open'], label='rule1')
+rule2 = ctrl.Rule(antecedent=pm10['low'] & pm25['medium'] & ~humidity['high'], consequent=pass_quality['open'], label='rule2')
+rule3 = ctrl.Rule(antecedent=pm10['medium'] & pm25['low'] & ~humidity['high'], consequent=pass_quality['open'], label='rule3')
+rule4 = ctrl.Rule(antecedent=pm10['medium'] & pm25['medium'] & ~humidity['high'], consequent=pass_quality['precaution'], label='rule4')
+rule5 = ctrl.Rule(antecedent=pm10['high'] | pm25['high'] | humidity['high'], consequent=pass_quality['close'], label='rule5')
 
-fis_results = {"A1":0, "A2":0, "A3":0, "A4":0, "A5":0, "A6":0, "A7":0, "A8":0, "A9":0, "A10":0}
-
+fis_results = {"infoA3A5":0, "infoA2A4":0, "infoA2A3":0, "infoA1A2":0, "infoA1A6":0, "infoA3A6":0, "infoA6A10":0, "infoA6A7":0, 
+               "infoA9A10":0, "infoA7A9":0, "infoA8A9":0, "infoA7A8":0, "infoA5A7":0, "infoA4A8":0, "infoA4A5":0}
 
 # Crear y simular el sistema de control
-pass_ctrl = ctrl.ControlSystem([rule1, rule2, rule4, rule5])
+pass_ctrl = ctrl.ControlSystem(rules=[rule1, rule2, rule3, rule4, rule5])
 pass_sys = ctrl.ControlSystemSimulation(pass_ctrl)
 
 def process_fis_data(data):
@@ -46,6 +45,7 @@ def process_fis_data(data):
     pass_sys.input['humidity'] = data['avgHumidity']
     pass_sys.compute()
     fis_results[data['stationId']] = round(pass_sys.output["pass_quality"], 2)
+    return {data['stationId']: round(pass_sys.output["pass_quality"], 2)}
 
 def normalize_pm10(value: float) -> float:
     return min((value * 10) / 150, 10)

@@ -9,6 +9,7 @@ export default function Navbar() {
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
 
+
     const canShowSignUp = () => {
         return location.pathname === '/signin';
     };
@@ -18,7 +19,7 @@ export default function Navbar() {
     };
 
     const canShowUserInfo = () => {
-        return location.pathname === '/home' && token !== null;
+       return (location.pathname === '/home' || location.pathname === '/stats') && token !== null;
     };
 
     const handleRouting = async (event) => {
@@ -32,12 +33,21 @@ export default function Navbar() {
     const handleLogout = () => {
         setIsDropdownOpen(false)
         localStorage.removeItem('token'); 
+        localStorage.removeItem('role');
         navigate('/signin'); 
     };
 
     const handleProfile = () => {
         setIsDropdownOpen(false)
         navigate('/profile'); 
+    };
+
+    const showStats = () => {
+        setIsDropdownOpen(false)
+        if(location.pathname === '/home')
+            navigate('/stats');
+        else
+            navigate('/home');
     };
 
     return (
@@ -57,6 +67,11 @@ export default function Navbar() {
                           {canShowLogin() && (
                             <div className="hidden sm:ml-6 sm:flex space-x-4">
                                 <a href="#" onClick={handleRouting} className="hover:bg-green-700 hover:text-white bg-green-900 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Login</a>
+                            </div>
+                        )}
+                        { (localStorage.getItem('role') == 'Expert' && canShowUserInfo()) &&(
+                            <div className="hidden sm:ml-6 sm:flex space-x-4">
+                                <a href="#" onClick={showStats} className="hover:bg-green-700 hover:text-white bg-green-900 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">{location.pathname === "/home" ? "Stats" : "Evaluation" }</a>
                             </div>
                         )}
                         

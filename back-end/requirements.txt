@@ -10,3 +10,5 @@ paho-mqtt
 scikit-fuzzy
 numpy
 matplotlib
+elementpath
+httpx

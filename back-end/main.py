@@ -1,6 +1,8 @@
 import json
-from typing import List
+from typing import Any, Dict, List
 from fastapi import FastAPI, Depends, HTTPException, WebSocket, WebSocketDisconnect, status
+import httpx
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,24 +13,24 @@ from users_management_service import get_user_by_username, create_user, authenti
 import paho.mqtt.client as mqtt
 from mandani_fis_service import process_fis_data, fis_results
 from typing import Set
+from cpn_service import update_cpn_values, update_origin_destination, xml_to_java_string
 
 app = FastAPI()
 
-ACCESS_TOKEN_EXPIRATION = 30
-
 origins = [
     "http://localhost:3000",
-    "http://localhost:3000/home",
-
+    "http://localhost:3000/*",
+    "http://localhost:3000/home/",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origins,  # Permitir sólo este origen
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Permitir todos los métodos (GET, POST, etc.)
+    allow_headers=["*"],  # Permitir todos los headers
 )
+ACCESS_TOKEN_EXPIRATION = 30
 
 def get_db():
     db = SessionLocal()
@@ -92,8 +94,121 @@ async def update_password(username: str, new_password: str, db: Session = Depend
     db.commit()
     return {"message": "Password updated successfully"}
 
+class UpdateRequest(BaseModel):
+    states: Dict[str, str]  
+
+routes_state = {
+    "infoA3A5": 2, "infoA2A4": 2, 
+    "infoA2A3": 2, "infoA1A2": 2, 
+    "infoA1A6": 2, "infoA3A6": 2, 
+    "infoA6A10": 2, "infoA6A7": 2, 
+    "infoA9A10": 2, "infoA7A9": 2,
+    "infoA8A9": 2, "infoA7A8": 2, 
+    "infoA5A7": 2, "infoA4A8": 2, "infoA4A5": 2
+}
+
+@app.post("/update-station-states")
+async def update_station_states(request: UpdateRequest):
+    for station_id, state in request.states.items():
+        if station_id in routes_state:
+            if state == "Open":
+                routes_state[station_id] = 2
+            elif state == "Precaution":
+                routes_state[station_id] = 1
+            elif state == "Close":
+                routes_state[station_id] = 0
+    update_cpn_values('greenITS.cpn', routes_state, 5)
+    return {"message": "States updated successfully"}
 
 
+data_storage = {
+    "pm10Data": {},
+    "pm25Data": {},
+    "humidityData": {},
+    "windData": {}
+}
+
+class DataModel(BaseModel):
+    type: str
+    data: Dict[str, Any]
+
+@app.post("/save_data")
+async def save_data(data: DataModel):
+    data_storage[data.type] = data.data
+    return {"status": "success"}
+
+@app.get("/get_data/{data_type}")
+async def get_data(data_type: str):
+    if data_type in data_storage:
+        return {"data": data_storage[data_type]}
+    else:
+        raise HTTPException(status_code=404, detail="Data not found")
+    
+@app.post("/simulation")
+async def simulation():
+    print("atenchionaaaaa")
+    cpn_updated = update_origin_destination('greenITS.cpn', 1, 7, 6)
+    with open(cpn_updated, 'r', encoding='utf-8') as file:
+        cpn_xml_content = file.read()
+
+    print("voy a chache")
+    payload = {
+        "complex_verify": "false",
+        "need_sim_restart": "true",
+        "xml": xml_to_java_string(cpn_xml_content)
+    }
+
+    headers = {
+        "X-SessionId": "CPN_IDE_SESSION_1714397722200"
+    }
+    
+    print(xml_to_java_string(cpn_xml_content))
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post("http://localhost:8080/api/v2/cpn/init", json=payload, headers=headers)
+            if response.status_code != 200:
+                raise HTTPException(status_code=response.status_code, detail="Error in request to simulator")
+
+            payload = {
+                "options": {
+                    "fair_be": "false",
+                    "global_fairness": "false",
+                }
+            }
+            response = await client.post("http://localhost:8080/api/v2/cpn/sim/init", json=payload, headers=headers)
+            if response.status_code != 200:
+                raise HTTPException(status_code=response.status_code, detail="Error in request to simulator")
+
+            payload = {
+                "addStep": 5000,
+                "untilStep": 0,
+                "untilTime": 0,
+                "addTime": 0,
+                "amount": 5000
+            }
+            print("seguimos chache")
+
+            response = await client.post("http://localhost:8080/api/v2/cpn/sim/step_fast_forward", json=payload, headers=headers)
+
+            if response.status_code != 200:
+                raise HTTPException(status_code=response.status_code, detail="Error in request to simulator")
+            print("tocando chache")
+
+            response_data = response.json()
+            id_to_find = "ID1497673622"
+            tokens_and_mark = response_data.get("tokensAndMark", [])
+            route_info = next((item for item in tokens_and_mark if item["id"] == id_to_find), None)
+
+            if not route_info:
+                raise HTTPException(status_code=404, detail=f"ID {id_to_find} not found in the response")
+
+            marking = route_info.get("marking", "")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        
+    return {"message": marking }
+    
+    
 
 # MQTT CONFIG
 def on_connect(client, userdata, flags, rc):
@@ -103,8 +218,8 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     data = json.loads(msg.payload.decode('utf-8'))
     try:
-        process_fis_data(data)
-        
+        msg = process_fis_data(data)
+        client.publish("fisoutput", json.dumps(msg))
     except Exception as e:
         print("Error processing data:", e)
 

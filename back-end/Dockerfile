@@ -11,7 +11,9 @@ COPY models.py models.py
 COPY users_management_service.py users_management_service.py
 COPY database.py database.py
 COPY mandani_fis_service.py mandani_fis_service.py
-
+COPY route_service.py route_service.py
+COPY cpn_service.py cpn_service.py
+COPY greenITS.cpn greenITS.cpn
 
 
 # Instala las dependencias
