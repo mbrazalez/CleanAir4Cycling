@@ -17,6 +17,7 @@ export default function Home() {
         }
         const userData = await response.json();
         setRole(userData.user.role);
+        localStorage.setItem('username', userData.user.username);
         localStorage.setItem('role', userData.user.role);
       } catch (error) {
         console.error(error);

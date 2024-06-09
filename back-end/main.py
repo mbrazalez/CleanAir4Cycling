@@ -1,19 +1,21 @@
 import json
 from typing import Any, Dict, List
-from fastapi import FastAPI, Depends, HTTPException, WebSocket, WebSocketDisconnect, status
+from fastapi import FastAPI, Depends, HTTPException, Path, WebSocket, WebSocketDisconnect, status
 import httpx
+import openrouteservice
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
-from datetime import timedelta
+from datetime import time, timedelta
 from models import UserCreate
 from database import SessionLocal
 from users_management_service import get_user_by_username, create_user, authenticate_user, create_access_token, verify_token, modify_password
 import paho.mqtt.client as mqtt
 from mandani_fis_service import process_fis_data, fis_results
 from typing import Set
-from cpn_service import update_cpn_values, update_origin_destination, xml_to_java_string
+from cpn_service import extract_route_info, simulate_petri_net, update_cpn_values, update_origin_destination, update_specific_places
+from route_service import get_open_route_service, get_area_to_avoid, extract_route_info
 
 app = FastAPI()
 
@@ -117,7 +119,7 @@ async def update_station_states(request: UpdateRequest):
                 routes_state[station_id] = 1
             elif state == "Close":
                 routes_state[station_id] = 0
-    update_cpn_values('greenITS.cpn', routes_state, 5)
+    update_cpn_values('greenITS.cpn', routes_state)
     return {"message": "States updated successfully"}
 
 
@@ -143,72 +145,44 @@ async def get_data(data_type: str):
         return {"data": data_storage[data_type]}
     else:
         raise HTTPException(status_code=404, detail="Data not found")
-    
-@app.post("/simulation")
-async def simulation():
-    print("atenchionaaaaa")
-    cpn_updated = update_origin_destination('greenITS.cpn', 1, 7, 6)
-    with open(cpn_updated, 'r', encoding='utf-8') as file:
-        cpn_xml_content = file.read()
 
-    print("voy a chache")
-    payload = {
-        "complex_verify": "false",
-        "need_sim_restart": "true",
-        "xml": xml_to_java_string(cpn_xml_content)
-    }
 
-    headers = {
-        "X-SessionId": "CPN_IDE_SESSION_1714397722200"
-    }
-    
-    print(xml_to_java_string(cpn_xml_content))
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.post("http://localhost:8080/api/v2/cpn/init", json=payload, headers=headers)
-            if response.status_code != 200:
-                raise HTTPException(status_code=response.status_code, detail="Error in request to simulator")
 
-            payload = {
-                "options": {
-                    "fair_be": "false",
-                    "global_fairness": "false",
-                }
-            }
-            response = await client.post("http://localhost:8080/api/v2/cpn/sim/init", json=payload, headers=headers)
-            if response.status_code != 200:
-                raise HTTPException(status_code=response.status_code, detail="Error in request to simulator")
+with open("./transitions.geojson", "r") as file:
+    transitions_polygons = json.load(file)
 
-            payload = {
-                "addStep": 5000,
-                "untilStep": 0,
-                "untilTime": 0,
-                "addTime": 0,
-                "amount": 5000
-            }
-            print("seguimos chache")
+with open("./stations.json", "r") as file:
+    stations = json.load(file)
 
-            response = await client.post("http://localhost:8080/api/v2/cpn/sim/step_fast_forward", json=payload, headers=headers)
+class SimulateRequest(BaseModel):
+    origin: int
+    destination: int
+    username: str
 
-            if response.status_code != 200:
-                raise HTTPException(status_code=response.status_code, detail="Error in request to simulator")
-            print("tocando chache")
+@app.post("/simulate")
+async def get_bike_route(request: SimulateRequest, db: Session = Depends(get_db)):
+    print("Simulating route")
+    user = get_user_by_username(db, request.username)
+    user_experience = user.level
+    update_specific_places('./greenITS.cpn', request.origin, request.destination, user_experience)
+    update_origin_destination('./greenITS.cpn', request.origin, request.destination, user_experience)
+    simulation_response = await simulate_petri_net()
+    time, transitions = extract_route_info(simulation_response)
+    #transitions = [(1, 'o'), (2, 'p'), (4, 'o'), (8, 'p'), (9, 'o'), (7, 'p')]
+    print(transitions)
+    city_polygon = get_area_to_avoid(transitions)
+    origin_coords = stations.get(f"A{request.origin}")
+    destination_coords = stations.get(f"A{request.destination}")
 
-            response_data = response.json()
-            id_to_find = "ID1497673622"
-            tokens_and_mark = response_data.get("tokensAndMark", [])
-            route_info = next((item for item in tokens_and_mark if item["id"] == id_to_find), None)
+    if not origin_coords or not destination_coords:
+        raise HTTPException(status_code=400, detail="Invalid station coordinates")
 
-            if not route_info:
-                raise HTTPException(status_code=404, detail=f"ID {id_to_find} not found in the response")
-
-            marking = route_info.get("marking", "")
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
-        
-    return {"message": marking }
-    
-    
+    route_data = get_open_route_service(origin_coords, destination_coords, city_polygon)
+    return {
+            "route": route_data,
+            "time": 0,
+            "avoid_polygon": city_polygon['coordinates']
+        }
 
 # MQTT CONFIG
 def on_connect(client, userdata, flags, rc):
@@ -228,5 +202,3 @@ client.on_connect = on_connect
 client.on_message = on_message
 client.connect("54.78.231.141", 1883, 60)
 client.loop_start()
-
-

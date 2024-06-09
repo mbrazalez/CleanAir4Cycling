@@ -178,13 +178,13 @@ export default function Stats() {
         },
         title: {
           display: true,
-          text: 'Timestamp'
+          text: 'Date of the measurement'
         }
       },
       y: {
         title: {
           display: true,
-          text: 'Value'
+          text: 'Detected value'
         }
       }
     }
@@ -213,7 +213,7 @@ export default function Stats() {
           <Line data={createChartData(humidityData)} options={{...chartOptions, plugins: { title: { display: true, text: 'Humidity' } }}} />
         </div>
         <div>
-          <Line data={createChartData(windData)} options={{...chartOptions, plugins: { title: { display: true, text: 'Wind Speed and Direction' } }}} />
+          <Line data={createChartData(windData)} options={{...chartOptions, plugins: { title: { display: true, text: 'Wind Speed' } }}} />
         </div>
       </div>
     </div>

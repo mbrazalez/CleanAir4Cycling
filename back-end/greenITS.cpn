@@ -5,16 +5,20 @@
       <block id="ID1412310166">
         <id>Standard priorities</id>
         <ml id="ID1412310255">val P_HIGH = 100;
-          <layout>val P_HIGH = 100;</layout>
+          <layout>val P_HIGH = 100;
+          </layout>
         </ml>
         <ml id="ID1412310292">val P_NORMAL = 1000;
-          <layout>val P_NORMAL = 1000;</layout>
+          <layout>val P_NORMAL = 1000;
+          </layout>
         </ml>
         <ml id="ID1412310322">val P_LOW = 10000;
-          <layout>val P_LOW = 10000;</layout>
+          <layout>val P_LOW = 10000;
+          </layout>
         </ml>
         <ml id="ID1496554807">val P_LOWEST=20000;
-          <layout>val P_LOWEST=20000;</layout>
+          <layout>val P_LOWEST=20000;
+          </layout>
         </ml>
       </block>
       <block id="ID1">
@@ -129,88 +133,116 @@
           <layout>var st,st1,st2,st3,st4,st5,st6,st7:STRING;</layout>
         </var>
         <ml id="ID1496510059">val genType=1;
-          <layout>val genType=1;</layout>
+          <layout>val genType=1;
+          </layout>
         </ml>
         <ml id="ID1494599811">val wTnw=4;
-          <layout>val wTnw=4;</layout>
+          <layout>val wTnw=4;
+          </layout>
         </ml>
         <ml id="ID1494600197">val nwTw=4;
-          <layout>val nwTw=4;</layout>
+          <layout>val nwTw=4;
+          </layout>
         </ml>
         <ml id="ID1494684189">val nwTn=2;
-          <layout>val nwTn=2;</layout>
+          <layout>val nwTn=2;
+          </layout>
         </ml>
         <ml id="ID1494685673">val nTnw=2;
-          <layout>val nTnw=2;</layout>
+          <layout>val nTnw=2;
+          </layout>
         </ml>
         <ml id="ID1494839784">val nwTc=3;
-          <layout>val nwTc=3;</layout>
+          <layout>val nwTc=3;
+          </layout>
         </ml>
         <ml id="ID1494842228">val cTnw=3;
-          <layout>val cTnw=3;</layout>
+          <layout>val cTnw=3;
+          </layout>
         </ml>
         <ml id="ID1494602321">val wTs=5;
-          <layout>val wTs=5;</layout>
+          <layout>val wTs=5;
+          </layout>
         </ml>
         <ml id="ID1494602546">val sTw=5;
-          <layout>val sTw=5;</layout>
+          <layout>val sTw=5;
+          </layout>
         </ml>
         <ml id="ID1494602774">val wTc=8;
-          <layout>val wTc=8;</layout>
+          <layout>val wTc=8;
+          </layout>
         </ml>
         <ml id="ID1494603005">val cTw=8;
-          <layout>val cTw=8;</layout>
+          <layout>val cTw=8;
+          </layout>
         </ml>
         <ml id="ID1494603239">val nTe=6;
-          <layout>val nTe=6;</layout>
+          <layout>val nTe=6;
+          </layout>
         </ml>
         <ml id="ID1494603476">val eTn=6;
-          <layout>val eTn=6;</layout>
+          <layout>val eTn=6;
+          </layout>
         </ml>
         <ml id="ID1494604730">val nTc=4;
-          <layout>val nTc=4;</layout>
+          <layout>val nTc=4;
+          </layout>
         </ml>
         <ml id="ID1494604985">val cTn=4;
-          <layout>val cTn=4;</layout>
+          <layout>val cTn=4;
+          </layout>
         </ml>
         <ml id="ID1494605243">val eTc=6;
-          <layout>val eTc=6;</layout>
+          <layout>val eTc=6;
+          </layout>
         </ml>
         <ml id="ID1494605504">val cTe=6;
-          <layout>val cTe=6;</layout>
+          <layout>val cTe=6;
+          </layout>
         </ml>
         <ml id="ID1494606878">val eTse=3;
-          <layout>val eTse=3;</layout>
+          <layout>val eTse=3;
+          </layout>
         </ml>
         <ml id="ID1494607157">val seTe=3;
-          <layout>val seTe=3;</layout>
+          <layout>val seTe=3;
+          </layout>
         </ml>
         <ml id="ID1494607439">val seTc=4;
-          <layout>val seTc=4;</layout>
+          <layout>val seTc=4;
+          </layout>
         </ml>
         <ml id="ID1494607724">val cTse=4;
-          <layout>val cTse=4;</layout>
+          <layout>val cTse=4;
+          </layout>
         </ml>
         <ml id="ID1494609218">val seTs=5;
-          <layout>val seTs=5;</layout>
+          <layout>val seTs=5;
+          </layout>
         </ml>
         <ml id="ID1494609830">val sTse=5;
-          <layout>val sTse=5;</layout>
+          <layout>val sTse=5;
+          </layout>
         </ml>
         <ml id="ID1494610139">val sTc=6;
-          <layout>val sTc=6;</layout>
+          <layout>val sTc=6;
+          </layout>
         </ml>
         <ml id="ID1494610772">val cTs=6;
-          <layout>val cTs=6;</layout>
+          <layout>val cTs=6;
+          </layout>
         </ml>
         <ml id="ID1495475274">val q1=7;
-          <layout>val q1=7;</layout>
+          <layout>val q1=7;
+          </layout>
         </ml>
         <ml id="ID1495475318">val q2=22;
-          <layout>val q2=22;</layout>
+          <layout>val q2=22;
+          </layout>
         </ml>
         <ml id="ID1494625806">val tmax=4000;
-          <layout>val tmax=4000;</layout>
+          <layout>val tmax=4000;
+          </layout>
         </ml>
         <var id="ID1494626691">
           <type>
@@ -275,31 +307,31 @@ if (#4y &lt; #4z) then 1`y else 1`z</layout>
       </block>
       <block id="ID1494615515">
         <id>InitialMarkings</id>
-        <ml id="ID1498226844">val A10info = 0`(0,0,[(1,"o")],0);</ml>
-        <ml id="ID1498226288">val A9info = 0`(0,0,[(1,"o")],0);</ml>
-        <ml id="ID1498225744">val A8info = 0`(0,0,[(1,"o")],0);</ml>
-        <ml id="ID1498225212">val A7info = 0`(0,0,[(1,"o")],0);</ml>
-        <ml id="ID1498224445">val A6info = 0`(0,0,[(1,"o")],0);</ml>
-        <ml id="ID1498223943">val A5info = 0`(0,0,[(1,"o")],0);</ml>
-        <ml id="ID1498223453">val A4info = 0`(0,0,[(1,"o")],0);</ml>
-        <ml id="ID1498219101">val A3info = 0`(0,0,[(1,"o")],0);</ml>
-        <ml id="ID1498222510">val A2info = 0`(5,2,[(1,"o")],1000)</ml>
-        <ml id="ID1498222056">val A1info = 100`(5,2,[(1,"o")],0)</ml>
-        <ml id="ID1498210961">val infoA3A5 = 1`(2,5,5,5)</ml>
-        <ml id="ID1498211023">val infoA2A4 = 1`(2,5,5,5)</ml>
-        <ml id="ID1498212483">val infoA2A3 = 1`(1,5,5,5)</ml>
-        <ml id="ID1498212289">val infoA1A2 = 1`(1,5,5,5)</ml>
-        <ml id="ID1498212107">val infoA1A6 = 1`(2,5,5,5)</ml>
-        <ml id="ID1498211937">val infoA3A6 = 1`(0,5,5,5)</ml>
-        <ml id="ID1498211779">val infoA6A10 = 1`(2,5,5,5)</ml>
-        <ml id="ID1498211632">val infoA6A7 = 1`(0,5,5,5)</ml>
-        <ml id="ID1498211498">val infoA9A10 = 1`(2,5,5,5)</ml>
-        <ml id="ID1498211376">val infoA7A9 = 1`(1,5,5,5)</ml>
-        <ml id="ID1498211266">val infoA8A9 = 1`(2,5,5,5)</ml>
-        <ml id="ID1498211168">val infoA7A8 = 1`(1,5,5,5)</ml>
-        <ml id="ID1498127118">val infoA5A7 = 1`(2,5,5,5)</ml>
-        <ml id="ID1498210873">val infoA4A8 = 1`(1,5,5,5)</ml>
-        <ml id="ID1498210911">val infoA4A5 = 1`(2,5,5,5)</ml>
+        <ml id="ID1498226844">val A10info = 0`(4,7,[(1,"o")],0)</ml>
+        <ml id="ID1498226288">val A9info = 0`(4,7,[(1,"o")],0)</ml>
+        <ml id="ID1498225744">val A8info = 0`(4,7,[(1,"o")],0)</ml>
+        <ml id="ID1498225212">val A7info = 0`(4,7,[(1,"o")],100)</ml>
+        <ml id="ID1498224445">val A6info = 0`(4,7,[(1,"o")],0)</ml>
+        <ml id="ID1498223943">val A5info = 0`(4,7,[(1,"o")],0)</ml>
+        <ml id="ID1498223453">val A4info = 0`(4,7,[(1,"o")],0)</ml>
+        <ml id="ID1498219101">val A3info = 0`(4,7,[(1,"o")],0)</ml>
+        <ml id="ID1498222510">val A2info = 0`(4,7,[(1,"o")],0)</ml>
+        <ml id="ID1498222056">val A1info = 100`(4,7,[(1,"o")],0)</ml>
+        <ml id="ID1498210961">val infoA3A5 = 1`(0,5,5,0)</ml>
+        <ml id="ID1498211023">val infoA2A4 = 1`(2,5,5,0)</ml>
+        <ml id="ID1498212483">val infoA2A3 = 1`(2,5,5,0)</ml>
+        <ml id="ID1498212289">val infoA1A2 = 1`(1,5,5,0)</ml>
+        <ml id="ID1498212107">val infoA1A6 = 1`(2,5,5,0)</ml>
+        <ml id="ID1498211937">val infoA3A6 = 1`(2,5,5,0)</ml>
+        <ml id="ID1498211779">val infoA6A10 = 1`(2,5,5,0)</ml>
+        <ml id="ID1498211632">val infoA6A7 = 1`(0,5,5,0)</ml>
+        <ml id="ID1498211498">val infoA9A10 = 1`(0,5,5,0)</ml>
+        <ml id="ID1498211376">val infoA7A9 = 1`(0,5,5,0)</ml>
+        <ml id="ID1498211266">val infoA8A9 = 1`(1,5,5,0)</ml>
+        <ml id="ID1498211168">val infoA7A8 = 1`(2,5,5,0)</ml>
+        <ml id="ID1498127118">val infoA5A7 = 1`(2,5,5,0)</ml>
+        <ml id="ID1498210873">val infoA4A8 = 1`(2,5,5,0)</ml>
+        <ml id="ID1498210911">val infoA4A5 = 1`(2,5,5,0)</ml>
         <ml id="ID1498117235">val level = 5;</ml>
         <ml id="ID1498121037">val wind=10; </ml>
         <ml id="ID1497531037">fun getInfor()=(discrete(1,2),discrete(0,wind),discrete(0,wind),5);</ml>
